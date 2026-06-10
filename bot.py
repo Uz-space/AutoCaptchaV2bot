@@ -113,6 +113,9 @@ def build_keyboard() -> InlineKeyboardMarkup:
 bot = Bot(token=BOT_TOKEN)
 dp  = Dispatcher()
 
+# Bot username (startup da on_startup() orqali aniqlanadi)
+BOT_USERNAME = ""
+
 
 @dp.message(CommandStart())
 async def cmd_start(message: Message):
@@ -125,7 +128,8 @@ async def cmd_start(message: Message):
 
 @dp.callback_query(F.data == "refresh")
 async def cb_refresh(call: CallbackQuery):
-    await call.message.edit_text(
+    await call.message.delete()
+    await call.message.answer(
         text=build_message_text(),
         reply_markup=build_keyboard(),
         parse_mode=None
@@ -156,7 +160,34 @@ async def cb_subscription(call: CallbackQuery):
 
 @dp.callback_query(F.data == "invite")
 async def cb_invite(call: CallbackQuery):
-    await call.answer("🎁 Invite Friend", show_alert=False)
+    user = call.from_user
+    ref_code = f"ref_{user.id}"
+    ref_link = f"https://t.me/{BOT_USERNAME}?start={ref_code}"
+
+    text = (
+        "🎁🎁 <b>Referral System</b>\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+        "🔗 <b>Your referral link:</b>\n"
+        f"<code>{ref_link}</code>\n\n"
+        "📢 <b>Share this link with your friends!</b>\n"
+        "├ You get: <b>+16 claims</b>\n"
+        "└ Your friend gets: <b>+8 claims</b>\n\n"
+        "📋 <b>Your code:</b>\n"
+        f"<code>{ref_code}</code>\n"
+        f"<i>(share link, send <code>{ref_code}</code> as text, or <code>/{ref_code}</code>)</i>\n\n"
+        "👥 <b>Friends joined:</b> 0\n"
+        "📊 <b>Bonus claims earned:</b> 0"
+    )
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔗 Copy Link", switch_inline_query=ref_link)],
+        [InlineKeyboardButton(text="📨 Share with Friend", url=f"https://t.me/share/url?url={ref_link}&text=Menga+qo%27shil%21")],
+        [InlineKeyboardButton(text="◀️ Back", callback_data="back_main")],
+    ])
+
+    await call.message.delete()
+    await call.message.answer(text=text, reply_markup=keyboard, parse_mode="HTML")
+    await call.answer()
 
 
 @dp.callback_query(F.data == "settings")
@@ -164,7 +195,25 @@ async def cb_settings(call: CallbackQuery):
     await call.answer("⚙️ Settings", show_alert=False)
 
 
+@dp.callback_query(F.data == "back_main")
+async def cb_back_main(call: CallbackQuery):
+    await call.message.delete()
+    await call.message.answer(
+        text=build_message_text(),
+        reply_markup=build_keyboard(),
+        parse_mode=None
+    )
+    await call.answer()
+
+
+async def on_startup():
+    global BOT_USERNAME
+    me = await bot.get_me()
+    BOT_USERNAME = me.username
+
+
 async def main():
+    await on_startup()
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
