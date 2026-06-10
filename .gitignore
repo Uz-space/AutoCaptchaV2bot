@@ -1,6 +1,0 @@
-users_config/
-*.log
-*.txt
-cf.json
-cf.py
-.DS_Store
