@@ -1,8 +1,0 @@
-Yo[phases.setup]
-nixPkgs = ["python311Full"]
-
-[phases.install]
-cmds = ["pip install -r requirements.txt --break-system-packages"]
-
-[start]
-cmd = "python ripperbot.py"
