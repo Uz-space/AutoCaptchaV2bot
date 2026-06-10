@@ -6,7 +6,7 @@ from aiogram.filters import CommandStart
 
 logging.basicConfig(level=logging.INFO)
 
-BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
+BOT_TOKEN = "8985212757:AAEFicAmp1IHWLanCUjsoLGD9yOhpR64JfE"
 
 # ─── Kran konfiguratsiyasi ───────────────────────────────────────────────────
 # TronPick, LitePick, DogePick — birinchi 3 ta (1-2 pozitsiya)
