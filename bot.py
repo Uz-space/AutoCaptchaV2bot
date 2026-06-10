@@ -6,7 +6,7 @@ from aiogram.filters import CommandStart
 
 logging.basicConfig(level=logging.INFO)
 
-BOT_TOKEN "8985212757:AAEFicAmp1IHWLanCUjsoLGD9yOhpR64JfE"
+BOT_TOKEN = "8985212757:AAEFicAmp1IHWLanCUjsoLGD9yOhpR64JfE"
 
 # ─── Kran konfiguratsiyasi ───────────────────────────────────────────────────
 CRANES = [
