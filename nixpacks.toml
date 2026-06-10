@@ -1,4 +1,4 @@
-[phases.setup]
+Yo[phases.setup]
 nixPkgs = ["python311Full"]
 
 [phases.install]
