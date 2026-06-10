@@ -1,16 +1,16 @@
-FROM php:8.3-cli
+
+FROM php:8.2-cli
 
 WORKDIR /app
 
-# Curl va json extensionlarini o'rnatish
+# Curl extensionini o'rnatish
 RUN docker-php-ext-install curl json
 
-# Bot fayllarini ko'chirish
-COPY bot.php .
-COPY railway.json .
+# Bot faylini ko'chirish
+COPY bot.php /app/bot.php
 
 # Papka yaratish
-RUN mkdir -p users_config && chmod 777 users_config
+RUN mkdir -p /app/users_config && chmod 777 /app/users_config
 
 # Botni ishga tushirish
-CMD ["php", "bot.php"]
+CMD ["php", "/app/bot.php"]
