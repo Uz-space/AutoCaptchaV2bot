@@ -12,16 +12,16 @@ BOT_TOKEN = "8985212757:AAEFicAmp1IHWLanCUjsoLGD9yOhpR64JfE"
 # TronPick, LitePick, DogePick — birinchi 3 ta (1-2 pozitsiya)
 # Qolganlar ketma-ket
 CRANES = [
-    {"name": "TronPick", "emoji": "🔴",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
-    {"name": "LitePick", "emoji": "🌕",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
-    {"name": "DogePick", "emoji": "🐕",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
-    {"name": "PolPick",  "emoji": "🪙",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
-    {"name": "BnbPick",  "emoji": "🟡",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
-    {"name": "SolPick",  "emoji": "☀️",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
-    {"name": "SuiPick",  "emoji": "💧",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
-    {"name": "UsdPick",  "emoji": "💵",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
-    {"name": "TonPick",  "emoji": "💎",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
-    {"name": "BchPick",  "emoji": "🟤",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞"},
+    {"name": "TronPick", "emoji": "🔴",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
+    {"name": "LitePick", "emoji": "🌕",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
+    {"name": "DogePick", "emoji": "🐕",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
+    {"name": "PolPick",  "emoji": "🪙",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
+    {"name": "BnbPick",  "emoji": "🟡",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
+    {"name": "SolPick",  "emoji": "☀️",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
+    {"name": "SuiPick",  "emoji": "💧",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
+    {"name": "UsdPick",  "emoji": "💵",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
+    {"name": "TonPick",  "emoji": "💎",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
+    {"name": "BchPick",  "emoji": "🟤",  "active": False, "multiplier": None, "claims": 0, "max_claims": "∞", "balance": 0, "accounts": []},
 ]
 
 # ─── Global holat ────────────────────────────────────────────────────────────
@@ -140,7 +140,46 @@ async def cb_refresh(call: CallbackQuery):
 @dp.callback_query(F.data.startswith("crane_"))
 async def cb_crane(call: CallbackQuery):
     crane_name = call.data.replace("crane_", "")
-    await call.answer(f"⚙️ {crane_name} sozlamalari", show_alert=False)
+
+    # Kran ma'lumotlarini topish
+    crane = next((c for c in CRANES if c["name"] == crane_name), None)
+    if not crane:
+        await call.answer("Kran topilmadi!", show_alert=True)
+        return
+
+    accounts = crane.get("accounts", [])
+    total_claims = crane.get("claims", 0)
+    balance = crane.get("balance", 0)
+    acc_count = len(accounts)
+    active_count = sum(1 for a in accounts if a.get("active", False))
+
+    text = (
+        f"{crane['emoji']} <b>{crane_name} — Control Panel</b>\n"
+        f"📊 {total_claims} claims | 💰 {balance}\n"
+        f"▶️ <b>ACTIVE ACCOUNTS ({active_count}/{acc_count}):</b>\n"
+    )
+
+    if accounts:
+        for acc in accounts:
+            status = "🟢" if acc.get("active") else "🔴"
+            text += f"  {status} {acc['name']}\n"
+    else:
+        text += "<i>No active accounts — + to add</i>"
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="➕ Add Account", callback_data=f"add_account_{crane_name}")],
+        [InlineKeyboardButton(text="◀️ Back",        callback_data="back_main")],
+    ])
+
+    await call.message.delete()
+    await call.message.answer(text=text, reply_markup=keyboard, parse_mode="HTML")
+    await call.answer()
+
+
+@dp.callback_query(F.data.startswith("add_account_"))
+async def cb_add_account(call: CallbackQuery):
+    crane_name = call.data.replace("add_account_", "")
+    await call.answer(f"➕ {crane_name} uchun akkount qo'shish (tez orada...)", show_alert=True)
 
 
 @dp.callback_query(F.data == "proxies")
