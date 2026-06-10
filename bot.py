@@ -6,7 +6,7 @@ from aiogram.filters import CommandStart
 
 logging.basicConfig(level=logging.INFO)
 
-BOT_TOKEN = "8985212757:AAEFicAmp1IHWLanCUjsoLGD9yOhpR64JfE"
+BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
 
 # ─── Kran konfiguratsiyasi ───────────────────────────────────────────────────
 # TronPick, LitePick, DogePick — birinchi 3 ta (1-2 pozitsiya)
@@ -172,15 +172,12 @@ async def cb_invite(call: CallbackQuery):
         "📢 <b>Share this link with your friends!</b>\n"
         "├ You get: <b>+16 claims</b>\n"
         "└ Your friend gets: <b>+8 claims</b>\n\n"
-        "📋 <b>Your code:</b>\n"
-        f"<code>{ref_code}</code>\n"
-        f"<i>(share link, send <code>{ref_code}</code> as text, or <code>/{ref_code}</code>)</i>\n\n"
+
         "👥 <b>Friends joined:</b> 0\n"
         "📊 <b>Bonus claims earned:</b> 0"
     )
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🔗 Copy Link", switch_inline_query=ref_link)],
         [InlineKeyboardButton(text="📨 Share with Friend", url=f"https://t.me/share/url?url={ref_link}&text=Menga+qo%27shil%21")],
         [InlineKeyboardButton(text="◀️ Back", callback_data="back_main")],
     ])
